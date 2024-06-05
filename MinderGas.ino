@@ -33,7 +33,7 @@ void SendToMinderGas()
             {
                 // create a string with the date and the meter value
                 char dataString[80];
-                sprintf(dataString,"{\"date\":\"%04d-%02d-%02d\",\"reading_l\":\"%ld\"}", year(t),month(t),day(t),MG_SENSOR.Midnight);
+                sprintf_P(dataString, PSTR("{\"date\":\"%04d-%02d-%02d\",\"reading_l\":\"%ld\"}"), year(t),month(t),day(t),MG_SENSOR.Midnight);
                 // send headers
                 mgClient << F("POST /api/gas_meter_readings?auth_token=" MG_KEY " HTTP/1.1") << endl;
                 mgClient << F("Host: mindergas.nl") << endl;
