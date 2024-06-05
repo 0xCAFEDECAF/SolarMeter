@@ -95,9 +95,9 @@ void SendToPvOutput(BaseSensor** S)
           pvout << F("GET /service/r2/addstatus.jsp");
           pvout << F("?key=" PVOUTPUT_API_KEY);
           pvout << F("&sid=") << sid;
-          sprintf(webData, "&d=%04d%02d%02d", year(),month(),day());
+          sprintf_P(webData, PSTR("&d=%04d%02d%02d"), year(),month(),day());
           pvout << webData;
-          sprintf(webData, "&t=%02d:%02d", hour(),minute());
+          sprintf_P(webData, PSTR("&t=%02d:%02d"), hour(),minute());
           pvout << webData;
           for(byte i = 0; i < 12; i++)
           {
