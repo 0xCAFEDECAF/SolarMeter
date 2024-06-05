@@ -33,8 +33,8 @@ class BaseSensor
   int  ppu;                                    // the pulses per unit (kWh or m3) for this counter
   long lastMillis;                             // the time of the last pulse (ms)
   long pulseLength;                            // the time between the last two pulses (ms)
-  int ee;                                      // the address to store the day counter in case of a reset
-  int ee2;                                     // the address to store the total counter in case of a reset
+  uint32_t ee;                                 // the address to store the day counter in case of a reset
+  uint32_t ee2;                                // the address to store the total counter in case of a reset
 };
 
 #endif
