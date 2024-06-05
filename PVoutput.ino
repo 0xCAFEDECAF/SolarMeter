@@ -1,7 +1,15 @@
 IPAddress ip_pvoutput;
 int DnsStatus;
-char pvResponse[80];
-time_t pvResponseTime;
+
+#define RESPONSE_LEN 80
+
+// To store "(%5d ms)"
+#define RESPONSE_OK_TIME 10
+
+char pvResponseFail[RESPONSE_LEN] = "''";
+time_t pvResponseFailTime = 0;
+char pvResponseOk[RESPONSE_LEN + RESPONSE_OK_TIME] = "''";
+time_t pvResponseOkTime = 0;
 float previous = -1;
 
 
@@ -37,6 +45,7 @@ void SendToPvOutput(BaseSensor** S)
   }
 
   CheckIpPv(); // update the ipaddress via DNS
+  busy(0); // Strobe watchdog
 
   unsigned int sid = S[0]->SID;
 
@@ -89,9 +98,21 @@ void SendToPvOutput(BaseSensor** S)
     {
       if(sid > 0) // only upload if the sid is valid
       {
-        int res = pvout.connect(ip_pvoutput,80);
+        int res = 0;
+        int retries = 5;
+        while (retries-- > 0 && res != 1)
+        {
+          res = pvout.connect(ip_pvoutput,80);
+          busy(0); // Strobe watchdog
+          if (retries > 0 && res != 1) delay(561);  // Arbitrary delay
+        }
+
+        static int noConnections = 0;
+
         if(res == 1) // connection successfull
         {
+          noConnections = 0;
+
           pvout << F("GET /service/r2/addstatus.jsp");
           pvout << F("?key=" PVOUTPUT_API_KEY);
           pvout << F("&sid=") << sid;
@@ -116,30 +137,51 @@ void SendToPvOutput(BaseSensor** S)
           }
           pvout << F(" HTTP/1.1") << endl;
           pvout << F("Host: pvoutput.org") << endl << endl;
-          // give pvoutput some time to process the request
-          delay(500);
-          // skip the first part of the reply, which is "HTTP/1.1 "
-          pvout.readBytes(webData, 9);
-          // read the response code. 200 means ok. 0 means that there is no response yet
-          byte lastResponse = pvout.parseInt();
-          if(lastResponse == 0)
+
+          retries = 50; // Wait maximally 50 * 0.05 = 2.5 seconds, currently (6-2017) usually takes 0.15 seconds
+          while(retries-- > 0 && pvout.connected() && !pvout.available()) delay(50); // Wait for data
+          busy(0); // Strobe watchdog
+          char pvResponse[RESPONSE_LEN];
+          pvResponse[0] = 0;
+          if (pvout.connected() || pvout.available())
           {
-            sprintf(pvResponse,"Response timeout\0");
-            pvResponseTime = now();
-          }
-          else if(lastResponse != 200)
+            pvResponse[0] = '\'';
+            size_t n = pvout.readBytes(pvResponse + 1, RESPONSE_LEN-2-1); // -2: start and end quote; -1: terminating 0
+            pvResponse[n+1] = '\'';
+            pvResponse[n+2] = 0; // terminate the string
+          } // if
+          if (strstr(pvResponse, "200 OK") != 0)
           {
-            sprintf(pvResponse, "%03d",lastResponse);
-            size_t numchars = pvout.readBytes(pvResponse+3, 80);
-            pvResponse[numchars+3] = 0; // terminate the string
-            pvResponseTime = now();
+            // "200 OK" found in response
+            strncpy(pvResponseOk, pvResponse, RESPONSE_LEN - 1);
+            pvResponseOk[RESPONSE_LEN - 1] = 0;
+            size_t len = strlen(pvResponseOk);
+            sprintf(pvResponseOk + len, "(%5d ms)",50*(50 - retries - 1)); // Append delay between post and response
+            pvResponseOkTime = now();
           }
+          else
+          {
+            // "200 OK" not found in response
+            strncpy(pvResponseFail, pvResponse, RESPONSE_LEN - 1);
+            pvResponseFail[RESPONSE_LEN - 1] = 0;
+            pvResponseFailTime = now();
+          } // if
           pvout.stop();
+
         }
         else // cannnot connect
         {
-          sprintf(pvResponse,"No connection\0");
-          pvResponseTime = now();
+          strcpy_P(pvResponseFail, PSTR("No connection"));
+          pvResponseFailTime = now();
+
+          // From experience, the connectivity is lost after about 50-60 days of uptime. No idea why. A workaround
+          // is to reboot. After 6 subsequent times no connection (1 hour), try that.
+          noConnections++;
+          if (noConnections > 6)
+          {
+            busy(241);  // WD_FORCED_RESET; Indicate forced watchdog reset
+            while(1);  // Stay here until the watchdog barks
+          } // if
         }
       }
       // reset the counters for the next round

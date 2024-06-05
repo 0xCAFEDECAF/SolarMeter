@@ -106,7 +106,8 @@ void ShowStatus(EthernetClient client)
         sensors[i]->Status(client);
         client << F("</tr>");
     }
-    client << F("</table>last PvOutput fail=") << pvResponse << " @ " << DateTime(pvResponseTime) << br;
+    client << F("</table>last PvOutput fail=") << pvResponseFail << " @ " << DateTime(pvResponseFailTime) << br;
+    client << F("last PvOutput ok=") << pvResponseOk << " @ " << DateTime(pvResponseOkTime) << br;
     client << F("DNS status=") << DnsStatus << br;
     client << F("Last NTP update=") << DateTime(lastTimeUpdate) << " (in " << ntpRetry << "x)" <<  br;
     #ifdef USE_MINDERGAS
