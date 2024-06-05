@@ -29,7 +29,7 @@ byte   iMinute;
 int    upTime;               // the amount of hours the Arduino is running
 EthernetServer server(555);  // port changed from 80 to 555
 EthernetUDP Udp;
-char   webData[70];
+char   webData[14];
 #ifdef USE_LOGGING
   File   logFile;
 #endif
