@@ -15,7 +15,6 @@
 #include "P1Power.h"
 #include "AnalogSensor.h"
 #include "FerrarisSensor.h"
-#include "Temperature.h"
 #include "userdefs.h"
 
 //#include <SD.h>

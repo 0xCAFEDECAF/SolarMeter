@@ -85,14 +85,6 @@ S0Sensor  S1(2,1000,2222,2,1);   // S0 sensor connected to pin 2, logging to var
 // AnalogSensor W1(A1,1000,2222,8,1);  // water meter sensor connected to analog 1, measuring 10000 pulses per m3.
 //                                     Daily water usage (liter) is on v7, actual (liter/h) on v8 (donation mode)
 //*****************************************************************
-// Temperature 'sensor' Gets its value from an online weatherstation at buienradar.nl
-// Parameters:
-//   1: The number of the weatherstation to get the temperature from
-//      Find the nearest weatherstation on:  http://gratisweerdata.buienradar.nl/#Station
-//   2: The SID
-//   3: The factor to convert to degrees
-//   Temperature is logged to v5
-//  Temperature T1((char*)"6275",2222,10);
 // if you want to log the gas usage per 'graaddag' in stead of the temperature, enable the next line
 //#define GRAADDAGEN
 //*****************************************************************
