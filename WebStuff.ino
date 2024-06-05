@@ -20,7 +20,7 @@ void ServeWebClients()
             busy(242);  // WD_FORCED_RESET; Indicate forced watchdog reset
             while(1);  // Stay here until the watchdog barks
         }
-        if (Command((char*)"ntp")) UpdateTime(); // reload the ntp time
+        if (Command((char*)"ntp")) UpdateTime(1); // reload the ntp time, try only once
         if (Command((char*)"upload")) SendToPvOutput(sensors); // upload to pvoutput now
         int i=inString.indexOf("?");
         if(i!=-1) ReadValue(inString,i);
@@ -109,7 +109,13 @@ void ShowStatus(EthernetClient client)
     client << F("</table>last PvOutput fail=") << pvResponseFail << " @ " << DateTime(pvResponseFailTime) << br;
     client << F("last PvOutput ok=") << pvResponseOk << " @ " << DateTime(pvResponseOkTime) << br;
     client << F("DNS status=") << DnsStatus << br;
-    client << F("Last NTP update=") << DateTime(lastTimeUpdate) << " (in " << ntpRetry << "x)" <<  br;
+    client << F("Last NTP update=") << DateTime(lastNtpUpdate) << " (in " << ntpRetry << "x)" <<  br;
+    client << F("timeUpdateInterval=") << timeUpdateInterval << " seconds" << br;
+    client << F("timeDiff=");
+    if (timeDiff == LONG_MAX ) client << F("[unknown]"); else client << timeDiff << " seconds";
+    client << br;
+    client << F("clockDrift=") << clockDrift << " seconds" << br;
+    client << F("slewed=") << slewed << " seconds" << br;
     #ifdef USE_MINDERGAS
     client << F("mgUpload=") << DateTime(mgUploadTime) << br;
     client << F("MgResponse=") << mgResponse << br;

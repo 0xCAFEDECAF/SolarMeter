@@ -23,9 +23,6 @@
 byte   lastDayReset;
 byte   lastHour;
 byte   lastMinute;
-byte   iDay;
-byte   iHour;
-byte   iMinute;
 unsigned long upTime;  // the amount of hours the Arduino is running
 EthernetServer server(555);  // port changed from 80 to 555
 EthernetUDP Udp;
@@ -33,7 +30,9 @@ char   webData[14];
 #ifdef USE_LOGGING
   File   logFile;
 #endif
-#define EE_RESETDAY 4
+#define EE_RESETDAY 1
+
+void UpdateTime(int attempts = 10);
 
 void setup()
 {
@@ -52,8 +51,10 @@ void setup()
     // See also: https://forum.arduino.cc/index.php?topic=430605.0
     W5100.setRetransmissionCount(4);
 
-    // Try to set the time 10 times
-    UpdateTime();
+    setupNtp();
+
+    // Do a quick attempt in retrieving the time via NTP. Try only once otherwise setup can take really long.
+    UpdateTime(1);
 
     #ifdef USE_LOGGING
         // initialize SD card
@@ -99,65 +100,65 @@ void Every5ms()
     #endif
 }
 
+// Time
+extern time_t lastNtpUpdate;
+
 void loop()
 {
     // get the actual time
-    iDay = day();
-    iHour = hour();
-    iMinute = minute();
-    // reset counters when todays day is different from the last day the counters were reset
-    if(iDay != lastDayReset)
-    {
-        busy(1);
-        #ifdef USE_MINDERGAS
-            // Calculate the new gas metervalue and start the countdown
-            UpdateGas();
-        #endif
-        for(byte i = 0; i < NUMSENSORS; i++)
-        {
-            sensors[i]->Reset();
-        }
-        #ifdef USE_LOGGING
-            // create new logfile
-            CloseLogFile();
-            OpenLogFile();
-        #endif
-        lastDayReset = iDay;
-        // store today as the date of the last counter reset
-        eeprom_write_byte((uint8_t*) EE_RESETDAY, lastDayReset);
-    }
+    time_t t = now();
 
-    // hour has changed
-    // cannot simply check the change of an hour because 'updatetime' can also change the hour
-    // therefore we also check that the minutes are 0
-    if(iHour != lastHour && iMinute == 0)
+    // if we know the time, reset counters when todays day is different from the last day the counters were reset
+    if (isTimeValid(t))
     {
-        busy(2);
-        lastHour = iHour;
-        upTime++;
-        // save the daily values every hour
-        for(byte i = 0; i < NUMSENSORS; i++)
+        byte iDay = day(t); // 1..31
+        if (iDay != lastDayReset)
         {
-            sensors[i]->Save();
-        }
-        // sync the time at fixed interval
-        if(lastHour == 2 || lastHour == 14)
-        {
-            UpdateTime();
-        }
-        #ifdef USE_MAIL
-            if(lastHour == MAIL_TIME)
+            busy(1);
+            #ifdef USE_MINDERGAS
+                // Calculate the new gas metervalue and start the countdown
+                UpdateGas();
+            #endif
+            for(byte i = 0; i < NUMSENSORS; i++)
             {
-                SendMail();
+                sensors[i]->Reset();
             }
-        #endif
-    }
+            #ifdef USE_LOGGING
+                // create new logfile
+                CloseLogFile();
+                OpenLogFile();
+            #endif
+            lastDayReset = iDay;
+            // store today as the date of the last counter reset
+            eeprom_write_byte((uint8_t*) EE_RESETDAY, lastDayReset);
+        }
+    } // if
 
-    // update every minute
+    // Second has changed
+    static int lastSecond = -1;
+    byte iSecond = second(t); // 0..59
+    if (iSecond != lastSecond)
+    {
+        lastSecond = iSecond;
+
+        // Half way every minute, slew time. Note that it is safe to call slewTime() multiple times within the same minute
+        // (i.e. when slewTime() sets the time backwards by 1 second).
+        if (iSecond == 30) slewTime();
+    } // if
+
+    // Minute has changed
+    byte iMinute = minute(t); // 0..59
     if(iMinute != lastMinute)
     {
         busy(3);
+
         lastMinute = iMinute;
+
+        // Keep on trying to retrieve NTP time as long as we don't know the time.
+        // In a situation of power line restore, the uplink (home router) might still be rebooting when the
+        // call to UpdateTime() is made within setup() above.
+        if (! isTimeValid (now())) UpdateTime(1);
+
         for(byte i = 0; i < NUMSENSORS; i++)
         {
             sensors[i]->CalculateActuals();
@@ -199,16 +200,64 @@ void loop()
           }
         #endif
     }
+
+    // Hour has changed
+    byte iHour = hour(t); // 0..23
+    if (iHour != lastHour)
+    {
+        busy(2);
+
+        lastHour = iHour;
+
+        time_t dT = t - lastNtpUpdate;
+
+        // Skip if last NTP update was recent.
+        // Notes:
+        // - If UpdateTime() adjusts the time, the hour may jump, but t will be equal to lastNtpUpdate.
+        // - Assuming UpdateTime() does not set back the time by more than 5 minutes.
+        if (dT > 5 * SECS_PER_MIN)
+        {
+            upTime++;
+
+            // Save the daily values every hour. Do this first, before calling UpdateTime() which may take several
+            // minutes (worst case)
+            for(byte i = 0; i < NUMSENSORS; i++)
+            {
+                sensors[i]->Save();
+            }
+            #ifdef USE_MAIL
+                if(lastHour == MAIL_TIME)
+                {
+                    SendMail();
+                }
+            #endif
+
+            // Sync the time. Preferrably do this at a time that there is no sun shining, since a
+            // time shift can distort the "average" output of pvoutput: if the current period becomes (let's say)
+            // 12 minutes instead of 10 due to a 2 minute clock backwards setting, the average may be above the peak
+            // value, that is very ugly.
+
+            // Daily @ 2:00 am, or if the last update was 25 hours ago or more
+            if (lastHour == 2 || dT >= 25 * SECS_PER_HOUR)
+            {
+                UpdateTime();
+            }
+        } // if
+    }
+
     busy(4);
     // let all sensors do other stuff
     for(byte i = 0; i < NUMSENSORS; i++)
     {
       sensors[i]->Loop(lastMinute);
     }
+
     busy(5);
     // see if there are clients to serve
     ServeWebClients();
+
     busy(0);
+
     // give the ethernet shield some time to rest
     delay(50);
 }

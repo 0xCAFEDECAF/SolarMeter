@@ -32,6 +32,9 @@ void CheckIpPv()
 // The sensors are listed in the 'S' array
 void SendToPvOutput(BaseSensor** S)
 {
+  // Completely pointless to upload anything as long as we do not know the time
+  if (! isTimeValid(now())) return;
+
   EthernetClient pvout;
   // create a total for each variable that can be used in pvoutput
   // !! The index in this array starts at 0 while the pvoutput vars start at 1
