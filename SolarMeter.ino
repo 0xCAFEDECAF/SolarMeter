@@ -41,9 +41,16 @@ void setup()
     delay(300);
     // initialize network
     Ethernet.begin(mac, ip, dnsserver, gateway, subnet);
-    // set connect timeout parameters
-    W5100.setRetransmissionTime(2000); // 200ms per try
-    W5100.setRetransmissionCount(8);
+
+    // Set connect timeout parameters
+
+    // Units are 0.1 ms, i.e. 1000 will give 100ms for the initial attempt
+    W5100.setRetransmissionTime(1000);
+
+    // Timeout seems to double per retry up to a maximum of 64000 units, so by specifying 8 it will take:
+    // 2000 + 4000 + 8000 + 16000 + 32000 + 64000 + 64000 + 64000 + 64000 = 318000 = 31,8 seconds(!)
+    // See also: https://forum.arduino.cc/index.php?topic=430605.0
+    W5100.setRetransmissionCount(4);
 
     // Try to set the time 10 times
     UpdateTime();
