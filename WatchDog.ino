@@ -1,7 +1,8 @@
 byte busyState;
-int busyCounter;
+unsigned long busyCounter;
+const byte WD_FORCED_RESET = 240;
 
-#define TIMEOUT 12000 // * 5ms = 1 minute
+#define TIMEOUT 36000 // * 5ms = 3 minutes
 #define EE_CTR 78
 #define EE_STATE 79
 
@@ -18,14 +19,12 @@ void SetupWatchdog()
 
 void busy(byte function)
 {
-    if(function==0)
+    if (function == 0)
     {
-        busyCounter=0;
-    }
-    if(busyState!=function)
-    {
-        busyState = function;
-    }
+        busyCounter = 0;
+        return;
+    } // if
+    busyState = function;
 }
 
 // this is called every 5ms to keep the watchdog from resetting the board
@@ -38,7 +37,7 @@ void CheckWatchdog()
     // 12000 * 5ms + 4s = 64 seconds of inactivity before a reset occurs
     // A .connect() function can take up to 15 seconds because of DNS
     // so a normal watchdog would not be long enough.
-    if(busyCounter<TIMEOUT)
+    if(busyState < WD_FORCED_RESET && busyCounter < TIMEOUT)
     {
           // reset watchdog counter
           wdt_reset();
