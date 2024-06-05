@@ -8,14 +8,20 @@ void ServeWebClients()
         inString = client.readStringUntil('\n');
         client << F("HTTP/1.1 200 OK") << endl;
         client << F("Content-Type: text/html") << endl;
+        client << F("Cache-Control: no-store") << endl;
         client << F("Connection: close") << endl << endl;
         if (Command((char*)"save")) SaveValues();
         #ifdef USE_MINDERGAS
           if (Command((char*)"gas")) GasCountdown = 1;
         #endif
         if (Command((char*)"reset")) ResetValues();
-        if (Command((char*)"restart")) while(1); // stay here until the watchdog barks
+        if (Command((char*)"restart"))
+        {
+            busy(242);  // WD_FORCED_RESET; Indicate forced watchdog reset
+            while(1);  // Stay here until the watchdog barks
+        }
         if (Command((char*)"ntp")) UpdateTime(); // reload the ntp time
+        if (Command((char*)"upload")) SendToPvOutput(sensors); // upload to pvoutput now
         int i=inString.indexOf("?");
         if(i!=-1) ReadValue(inString,i);
         ShowStatus(client);
