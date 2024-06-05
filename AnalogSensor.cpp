@@ -11,13 +11,13 @@ void AnalogSensor::Begin(byte i)
     BaseSensor::Begin(i);
     readCounter = 0;
     sensorValue = 0;
-    sensorIsOn = false; 
+    sensorIsOn = false;
 }
 
 void AnalogSensor::CheckSensor()
 {
     // read the analog input 10 times before evaluating
-    sensorValue += analogRead(pin); 
+    sensorValue += analogRead(pin);
     readCounter++;
     if(readCounter == 10)
     {
@@ -38,4 +38,3 @@ void AnalogSensor::CheckSensor()
         sensorValue = 0;
     }
 }
-

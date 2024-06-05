@@ -17,5 +17,4 @@ void P1GasSensor::Reset()
   Today=0;
   Midnight = P1->GasUsage; // Get counter value
   BaseSensor::Reset(); // store it
-} 
-
+}

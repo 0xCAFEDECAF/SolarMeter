@@ -24,7 +24,7 @@ void Temperature::CalculateActuals()
 }
 void Temperature::Loop(int m)
 {
-    // limit the temperature reading to once every 10 minutes 
+    // limit the temperature reading to once every 10 minutes
     if(m%10==0)
     {
         if(needUpdate)
@@ -41,7 +41,7 @@ void Temperature::GetTemperature()
     // Get temperature from buienradar
     EthernetClient buienradarClient;
     buienradarClient.setTimeout(2000);
-    if(buienradarClient.connect((char*)"xml.buienradar.nl",80)) 
+    if(buienradarClient.connect((char*)"xml.buienradar.nl",80))
     {
         buienradarClient << F("GET / HTTP/1.1") << endl;
         buienradarClient << F("Host: xml.buienradar.nl") << endl << endl;
@@ -65,7 +65,7 @@ float Temperature::GetFactor(long Gas, int hr)
     // Calculate 'graaddagen' = 18 - average temperature of today
     float gd = 18 - average;
     if (gd < 0 || hr == 0)
-    { 
+    {
         gd = 0;
         gdFactor = 0;
     }
@@ -73,7 +73,7 @@ float Temperature::GetFactor(long Gas, int hr)
     {
         // Factor is gas usage per 'graaddag' extrapolated to the end of the day (*24/Hr)
         gdFactor = 2.4 * (Gas / gd) / hr ;
-    }  
+    }
     return gdFactor;
 }
 
@@ -83,5 +83,3 @@ void Temperature::Status(Print& client)
     client << F("<td>avg=") << average;
     client << F(" gdFactor=") << gdFactor;
 }
-
-

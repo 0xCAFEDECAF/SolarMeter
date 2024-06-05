@@ -13,7 +13,7 @@ void BaseSensor::Begin(byte i)
     Peak = 0;
     Today = 0;
     ee = (i+20) * 4; // the eeprom address of this sensor where the last value is saved
-    todayCnt = eeprom_read_dword((uint32_t*) ee); 
+    todayCnt = eeprom_read_dword((uint32_t*) ee);
     ee2 = (i+40) * 4; // the eeprom address for the total counters
     Midnight = eeprom_read_dword((uint32_t*) ee2);
     pulseLength = 0;
@@ -32,7 +32,7 @@ void BaseSensor::Loop(int m)
 
 void BaseSensor::Save()
 {
-    eeprom_write_dword((uint32_t*) ee, todayCnt); 
+    eeprom_write_dword((uint32_t*) ee, todayCnt);
 }
 
 void BaseSensor::Update(long Value)
@@ -99,6 +99,3 @@ void BaseSensor::Status(Print& client)
     client << td << ppu;
     client << td << pulseLength;
 }
-
-
-

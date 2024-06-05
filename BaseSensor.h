@@ -12,7 +12,7 @@ class BaseSensor
   BaseSensor(int ppu, unsigned int sid, int f);// constructor
   virtual void Begin(byte index);              // initialize all variables
   virtual void CheckSensor();                  // check the input and update counters (called from 5ms interrupt)
-  virtual void Loop(int m);                    // Called from main loop				
+  virtual void Loop(int m);                    // Called from main loop
   virtual void CalculateActuals();             // Convert all counters according to the pulses per unit
   virtual void Status(Print& client);          // Dump status to ethernet
   virtual void Reset();                        // Reset day-counter
@@ -25,9 +25,9 @@ class BaseSensor
   long Actual;                                 // Actual measured value in correct units
   long Peak;                                   // Peak value of the last period
   unsigned int SID;                            // System id where this sensor logs to
-  byte Type;                                   // Variable of PvOutput to log to. See userdefs.h for explanation  
+  byte Type;                                   // Variable of PvOutput to log to. See userdefs.h for explanation
   int Factor;                                  // Values will be divided by this number before sending them to pvOutput
-  
+
   protected:
   long todayCnt;                               // today's pulse count
   int  ppu;                                    // the pulses per unit (kWh or m3) for this counter
@@ -38,5 +38,3 @@ class BaseSensor
 };
 
 #endif
-
-

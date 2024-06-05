@@ -3,7 +3,7 @@ String inString = String((char*)"");
 void ServeWebClients()
 {
     EthernetClient client = server.available();
-    if (client) 
+    if (client)
     {
         inString = client.readStringUntil('\n');
         client << F("HTTP/1.1 200 OK") << endl;
@@ -39,7 +39,7 @@ void ReadValue(String input,int i)
     bool neg = false;
     int j = i + 3;
     int address = input[i+1];
-    if((address >= '0' && address < '9') || (address >= 'A' && address < 'J')) 
+    if((address >= '0' && address < '9') || (address >= 'A' && address < 'J'))
     {
         char c = input[j];
         if(c == '-')
@@ -65,7 +65,7 @@ void ReadValue(String input,int i)
             sensors[address-'0']->Update(val);
         }
     }
-} 
+}
 
 void SaveValues()
 {
@@ -89,12 +89,12 @@ void ShowStatus(EthernetClient client)
     client << F("<html><style>td,th {padding:8;text-align:center;}</style>");
     client << F(VERSION) << br;
     client << DateTime(now()) << br;
-    client << F("Uptime=") << upTime/24 << "d+" << upTime%24 << "h" << br;  
+    client << F("Uptime=") << upTime/24 << "d+" << upTime%24 << "h" << br;
     client << F("<table border=\"1\" cellspacing=\"0\">");
     client << F("<tr><th>ID<th>SID<th>Type<th>Actual<th>Peak<th>Today<th>Total<th>Factor<th>TodayCnt<th>EEprom<th>ppu<th>Pulse<th>Extra</tr>");
 
     for(int i=0;i<NUMSENSORS;i++)
-    {  
+    {
         sensors[i]->CalculateActuals();
         client << F("<tr><td>") << i;
         sensors[i]->Status(client);
@@ -116,11 +116,9 @@ void ShowStatus(EthernetClient client)
     client << F("Free=") << freeRam() << br;
 }
 
-int freeRam() 
+int freeRam()
 {
-  extern int __heap_start, *__brkval; 
-  int v; 
-  return (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval); 
+  extern int __heap_start, *__brkval;
+  int v;
+  return (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval);
 }
-
-

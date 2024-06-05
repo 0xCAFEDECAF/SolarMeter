@@ -10,7 +10,7 @@ class P1GasSensor : public BaseSensor
     P1GasSensor(P1Power* P1port , int sid, byte t, int f);
     void CalculateActuals();
     void Reset();
-  
+
   private:
     P1Power* P1;
 };

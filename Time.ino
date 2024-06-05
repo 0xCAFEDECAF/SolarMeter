@@ -1,5 +1,5 @@
 const int NTP_PACKET_SIZE= 48; // NTP time stamp is in the first 48 bytes of the message
-byte packetBuffer[NTP_PACKET_SIZE]; //buffer to hold incoming and outgoing packets 
+byte packetBuffer[NTP_PACKET_SIZE]; //buffer to hold incoming and outgoing packets
 time_t  lastTimeUpdate = 0;
 byte ntpRetry;
 
@@ -45,7 +45,7 @@ unsigned long getNtpTime()
         // the timestamp starts at byte 40 of the received packet and is four bytes,
         // or two words, long. First, extract the two words:
         unsigned long highWord = word(packetBuffer[40], packetBuffer[41]);
-        unsigned long lowWord = word(packetBuffer[42], packetBuffer[43]);  
+        unsigned long lowWord = word(packetBuffer[42], packetBuffer[43]);
         // check for invalid response
         if(highWord == 0 || lowWord == 0) return 0;
         // combine the four bytes (two words) into a long integer
@@ -57,14 +57,14 @@ unsigned long getNtpTime()
         int m = month(now);
         int previousSunday = day(now) - weekday(now) + 1;  // add one since weekday starts at 1
         dst = !(m < 3 || m > 10); // between october and march
-        if (dst) 
+        if (dst)
         {
-            if (m == 3) 
+            if (m == 3)
             {
                 //  starts last sunday of march
                 dst = previousSunday >= 25;
-            } 
-            else if (m == 10) 
+            }
+            else if (m == 10)
             {
                 // ends last sunday of october
                 dst = previousSunday < 25;
@@ -78,11 +78,11 @@ unsigned long getNtpTime()
     return 0; // return 0 if unable to get the time
 }
 
-// send an NTP request to the time server at the given address 
+// send an NTP request to the time server at the given address
 void sendNTPpacket()
 {
     // set all bytes in the buffer to 0
-    memset(packetBuffer, 0, NTP_PACKET_SIZE); 
+    memset(packetBuffer, 0, NTP_PACKET_SIZE);
     // Initialize values needed to form NTP request
     // (see URL above for details on the packets)
     packetBuffer[0] = 0b11100011;   // LI, Version, Mode
@@ -90,15 +90,14 @@ void sendNTPpacket()
     packetBuffer[2] = 6;     // Polling Interval
     packetBuffer[3] = 0xEC;  // Peer Clock Precision
     // 8 bytes of zero for Root Delay & Root Dispersion
-    packetBuffer[12]  = 49; 
+    packetBuffer[12]  = 49;
     packetBuffer[13]  = 0x4E;
     packetBuffer[14]  = 49;
     packetBuffer[15]  = 52;
 
     // all NTP fields have been given values, now
-    // you can send a packet requesting a timestamp: 		   
+    // you can send a packet requesting a timestamp:
     Udp.beginPacket(NTP_SERVER, 123); //NTP requests are to port 123
     Udp.write(packetBuffer,NTP_PACKET_SIZE);
-    Udp.endPacket(); 
+    Udp.endPacket();
 }
-

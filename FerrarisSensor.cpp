@@ -1,6 +1,6 @@
 #include "FerrarisSensor.h"
 
-FerrarisSensor::FerrarisSensor(byte p1, byte p2, int p, int sid, int f) : 
+FerrarisSensor::FerrarisSensor(byte p1, byte p2, int p, int sid, int f) :
 BaseSensor(p,sid,f)
 {
     pin1 = p1;
@@ -20,7 +20,7 @@ void FerrarisSensor::Begin(byte i)
     input2 = false;
     // variables for auto adjusting thresholds
     thresholdSampleCounter = 0;
-    low1 = 5000;        
+    low1 = 5000;
     low2 = 5000;
     sum1 = 0;
     sum2 = 0;
@@ -86,7 +86,7 @@ void FerrarisSensor::CheckSensor()
                 forward = false;
                 state = 1;
             }
-            break;                 
+            break;
         case 3:
             if(input1 && !input2)
             {
@@ -106,8 +106,8 @@ void FerrarisSensor::CheckSensor()
             {
                 state = 3;
             }
-            break;     
-        }   
+            break;
+        }
         // ready for the next sample
         sensorValue1 = 0;
         sensorValue2 = 0;
@@ -152,6 +152,3 @@ void FerrarisSensor::Status(Print& client)
     client << F(" 1=") << threshold1L << "-" << threshold1H << ":" << last1;
     client << F(" 2=") << threshold2L << "-" << threshold2H << ":" << last2;
 }
-
-
-

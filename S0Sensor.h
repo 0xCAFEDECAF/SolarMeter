@@ -9,12 +9,10 @@ class S0Sensor : public BaseSensor
     S0Sensor(byte pin, int p, int sid, byte v, int f);
     void Begin(byte i);
     void CheckSensor();
-  
+
   private:
     bool sensorIsOn;
     byte pin;
 };
 
 #endif
-
-

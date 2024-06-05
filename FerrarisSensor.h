@@ -14,7 +14,7 @@ class FerrarisSensor : public BaseSensor
     void Status(Print& client); // Dump status to ethernet
 
   private:
-    bool forward;		   // Current spinning direction
+    bool forward;                  // Current spinning direction
     byte pin1;                     // The location of analog input connected to left sensor
     byte pin2;                     // The location of analog input connected to right sensor
     byte readCounter;              // Counter keeps track of the number of sensor reads
@@ -25,7 +25,7 @@ class FerrarisSensor : public BaseSensor
     int  low1;                     // minimum of read values. Used to update the threshold
     long sum1;                     // total of read sensorvalues, used for average
     int  last1;                    // last value of sensor
-    bool input1;                   
+    bool input1;
     // right sensor
     int  sensorValue2;             // same as left
     int  threshold2H;
@@ -39,4 +39,3 @@ class FerrarisSensor : public BaseSensor
 };
 
 #endif
-

@@ -10,7 +10,7 @@ S0Sensor::S0Sensor(byte pn, int p, int sid, byte v, int f) : BaseSensor(p,sid,f)
 void S0Sensor::Begin(byte i)
 {
     BaseSensor::Begin(i);
-    sensorIsOn = false; 
+    sensorIsOn = false;
 }
 
 void S0Sensor::CheckSensor()

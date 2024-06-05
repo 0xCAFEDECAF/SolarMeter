@@ -12,7 +12,7 @@ class AnalogSensor : public BaseSensor
     AnalogSensor(int pin,int p, int sid, byte type, int f);
     void Begin(byte i);
     void CheckSensor();
-  
+
   private:
     bool sensorIsOn;
     byte readCounter;
@@ -21,4 +21,3 @@ class AnalogSensor : public BaseSensor
 };
 
 #endif
-

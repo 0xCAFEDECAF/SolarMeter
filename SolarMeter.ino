@@ -206,5 +206,3 @@ void loop()
     // give the ethernet shield some time to rest
     delay(50);
 }
-
-

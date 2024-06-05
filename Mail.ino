@@ -26,7 +26,7 @@ void SendMail()
 
                             mailClient << endl << F(".") << endl; // end of mail
 
-		            if(CheckResponse())
+                            if(CheckResponse())
                             {
                                 mailClient << F("QUIT") << endl; // terminate connection
                             }
@@ -42,7 +42,7 @@ void SendMail()
 boolean CheckResponse()
 {
   return mailClient.find((char*)"\n");
-  
+
 //    long timer = millis();
  //   while(millis() - timer < 5000)
   //  {
@@ -54,6 +54,5 @@ boolean CheckResponse()
    // }
    // return false;
 }
-
 
 #endif

@@ -31,13 +31,13 @@ void SendToPvOutput(BaseSensor** S)
   bool b[12]; // data present flags
   // start with 0
   for(byte n = 0; n < 12; n++)
-  { 
+  {
     v[n] = 0;
     b[n] = false;
   }
-  
+
   CheckIpPv(); // update the ipaddress via DNS
-  
+
   unsigned int sid = S[0]->SID;
 
   for(byte i = 0; i<NUMSENSORS; i++) // scan through the sensor array
@@ -60,7 +60,7 @@ void SendToPvOutput(BaseSensor** S)
       //ferraris or P1
       case 24:  // total consumption is production + net consumption
                 v[2] = v[0] + today;
-                
+
                 if(v[1] == 0) // no production, use data from type 24 directly
                 {
                     v[3] = actual;
@@ -69,7 +69,7 @@ void SendToPvOutput(BaseSensor** S)
                 {
                     // actual power is energy since previous upload divided by number of uploads per hour
                     // using this method because actual values of production and consumption sensors have different sampling rates, causing actual to be unreliable.
-                    if(previous >=0 && previous < v[2]) 
+                    if(previous >=0 && previous < v[2])
                     {
                       v[3] = (v[2] - previous) * 60 / UPDATEINTERVAL;
                     }
@@ -118,8 +118,8 @@ void SendToPvOutput(BaseSensor** S)
           pvout << F("Host: pvoutput.org") << endl << endl;
           // give pvoutput some time to process the request
           delay(500);
-		      // skip the first part of the reply, which is "HTTP/1.1 "
-		      pvout.readBytes(webData, 9);
+          // skip the first part of the reply, which is "HTTP/1.1 "
+          pvout.readBytes(webData, 9);
           // read the response code. 200 means ok. 0 means that there is no response yet
           byte lastResponse = pvout.parseInt();
           if(lastResponse == 0)
@@ -128,9 +128,9 @@ void SendToPvOutput(BaseSensor** S)
             pvResponseTime = now();
           }
           else if(lastResponse != 200)
-          { 
+          {
             sprintf(pvResponse, "%03d",lastResponse);
-            size_t numchars = pvout.readBytes(pvResponse+3, 80); 
+            size_t numchars = pvout.readBytes(pvResponse+3, 80);
             pvResponse[numchars+3] = 0; // terminate the string
             pvResponseTime = now();
           }
@@ -152,4 +152,3 @@ void SendToPvOutput(BaseSensor** S)
     }
   }
 }
-

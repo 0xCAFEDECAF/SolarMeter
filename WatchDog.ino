@@ -33,15 +33,15 @@ void CheckWatchdog()
 {
     // increment the counter as long as we are executing a function
     busyCounter++;
-    
+
     // keep resetting the watchdog until busycounter gets really big
     // 12000 * 5ms + 4s = 64 seconds of inactivity before a reset occurs
     // A .connect() function can take up to 15 seconds because of DNS
     // so a normal watchdog would not be long enough.
     if(busyCounter<TIMEOUT)
     {
-          // reset watchdog counter  
-          wdt_reset();        
+          // reset watchdog counter
+          wdt_reset();
     }
     else
     {
@@ -53,7 +53,6 @@ void CheckWatchdog()
         // save all counters
         SaveValues();
         // wait for the reset to come
-        while(1); 
+        while(1);
     }
 }
-

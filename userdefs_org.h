@@ -22,7 +22,7 @@ static byte dnsserver[] = {192,168,1,1};                          // use the add
                                                                   // or use the address of the dns server of your internet provider
                                                                   // or use { 8, 8, 8, 8 } as general DNS server from Google if you have no other option
 static byte gateway[]   = { 192, 168, 1, 1 };
-static byte subnet[]    = { 255, 255, 255, 0 };  
+static byte subnet[]    = { 255, 255, 255, 0 };
 //*****************************************************************
 #define NTP_SERVER "nl.pool.ntp.org"                             // If you are having problems with the time synchonisation, try a different NTP server
 
@@ -63,7 +63,7 @@ static byte subnet[]    = { 255, 255, 255, 0 };
 // NUMSENSORS must match the number of sensors defined.
 #define NUMSENSORS 3
 //*****************************************************************
-// S0 sensors have 5 parameters: 
+// S0 sensors have 5 parameters:
 //   1: The digital pin to which they are connected.
 //   2: The number of pulses for 1 kWh
 //   3: The System ID of the corresponding pvOutput graph
@@ -73,7 +73,7 @@ S0Sensor  S1(2,1000,2222,2,1);   // S0 sensor connected to pin 2, logging to var
 //S0Sensor  S2(3,2000,2222,2,1);   // S0 sensor connected to pin 3, logging to variable 1 & 2 (production) of sid 2222. This will be added to S1
 //S0Sensor  S3(4,1000,3333,4,1);   // S0 sensor connected to pin 4, logging to variable 3 & 4 (consumption) of sid 3333
 //*****************************************************************
-// Analog Sensors have 5 parameters: 
+// Analog Sensors have 5 parameters:
 //   1: The analog pin to which they are connected
 //   2: The number of pulses for unit
 //   3: The SID
@@ -96,7 +96,7 @@ S0Sensor  S1(2,1000,2222,2,1);   // S0 sensor connected to pin 2, logging to var
 // if you want to log the gas usage per 'graaddag' in stead of the temperature, enable the next line
 //#define GRAADDAGEN
 //*****************************************************************
-// Ferrarissensors have 5 parameters: 
+// Ferrarissensors have 5 parameters:
 //   1: The analog input of the left sensor
 //   2: The analog input of the right sensor
 //   3: The number of revolutions of the disc for 1kWh
@@ -105,14 +105,14 @@ S0Sensor  S1(2,1000,2222,2,1);   // S0 sensor connected to pin 2, logging to var
 //   This sensor always logs to variable 3 and 4
 //FerrarisSensor F1(A3,A4,250,2222,1);
 //*****************************************************************
-// Smartmeter Power sensor has 4 parameters: 
+// Smartmeter Power sensor has 4 parameters:
 //   1: Serial object. Mega2560: on Serial1. Uno etc: Serial watch out: Serial not working together with usb!
 //   2: The SID
 //   3: The variable to log to. See software manual
 //   4: The x-factor. The actual and total values will be divided by this number before sending to pvoutput
 P1Power P1(&Serial,2222, 24, 1);
 //*****************************************************************
-// Smartmeter Gas sensors have 4 parameter: 
+// Smartmeter Gas sensors have 4 parameter:
 //   1: Smartmeter Serial object. Default: P1
 //   2: The SID
 //   3: The variable to log to. See software manual

@@ -6,12 +6,12 @@ void SendToExosite()
 {
     EthernetClient exoSiteClient;
     // try to connect to exoSite
-    if (exoSiteClient.connect((char*)"m2.exosite.com",80)) 
+    if (exoSiteClient.connect((char*)"m2.exosite.com",80))
     {
         long v[10];
         // fill the v-array with values defined in the exosite.h file
         #include "exosite.h"
-        
+
         // compose a string with data to send
         String str = "";
         for(int i = 0; i < 10; i++)
@@ -20,7 +20,7 @@ void SendToExosite()
             str += i;
             str += '=';
             str += v[i];
-        }        
+        }
         // send the header
         exoSiteClient << F("POST /api:v1/stack/alias HTTP/1.1") << endl;
         exoSiteClient << F("Host: m2.exosite.com") << endl;
