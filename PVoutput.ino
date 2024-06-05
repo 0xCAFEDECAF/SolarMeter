@@ -43,9 +43,9 @@ void SendToPvOutput(BaseSensor** S)
   for(byte i = 0; i<NUMSENSORS; i++) // scan through the sensor array
   {
     byte type = S[i]->Type;
-    float actual = S[i]->Actual / S[i]->Factor;
-    float peak = S[i]->Peak / S[i]->Factor;
-    float today = S[i]->Today / S[i]->Factor;
+    float actual = (float)S[i]->Actual / S[i]->Factor;
+    float peak = (float)S[i]->Peak / S[i]->Factor;
+    float today = (float)S[i]->Today / S[i]->Factor;
 
     switch(type)
     {
