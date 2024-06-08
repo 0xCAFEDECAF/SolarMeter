@@ -34,7 +34,7 @@ inline Print &operator <<(Print &stream, T arg)
 
 enum _EndLineCode { endl };
 
-inline Print &operator <<(Print &stream, _EndLineCode arg)
+inline Print &operator <<(Print &stream, _EndLineCode)
 { stream.println(); return stream; }
 
 #endif

@@ -25,7 +25,7 @@ void BaseSensor::CheckSensor()
     // Check sensor must be done by the derived sensor
 }
 
-void BaseSensor::Loop(int m)
+void BaseSensor::Loop(int)
 {
     // Derived sensors can execute non time critical actions here
 }

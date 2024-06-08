@@ -27,7 +27,7 @@ void P1Power::CalculateActuals()
   Today = todayCnt;
 }
 
-void P1Power::Loop(int m)
+void P1Power::Loop(int)
 {
   while(serial->available())
   {
