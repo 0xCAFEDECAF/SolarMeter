@@ -1,1 +1,4 @@
 /docs/*.docx
+
+# Only 'userdefs_org.h' is kept in Git, 'userdefs.h' is just the locally filled-in copy.
+/userdefs.h
