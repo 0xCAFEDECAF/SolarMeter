@@ -1,4 +1,23 @@
 # Arduino Solar Meter
+
+# Version 11.44
+* Arduino Solar Meter Hardware Manual V11.pdf: add warning not to use 12V power supply
+* Fix weird compiler error
+* Consistent line terminators; remove trailig spaces; replace tabs by spaces
+* BaseSensor.h: make sure eeprom address is 32-bits
+* Web server: improve performance by writing a TCP packet per chunk instead of per character
+* WatchDog.ino: increase waiting time to 3 minutes; skip waiting time when forced reset
+* WebStuff.ino: add command `upload`; command `restart` now triggers immediate reboot
+* PVoutput.ino: prevent rounding errors
+* Improve uploading of data to pvoutput.org
+* Removed the retrieving of temperature from xml.buienradar.nl: it no longer works
+* Lower Ethernet timeout to prevent watchdog trigger and other issues
+* Completely rewritten time-of-day handling
+  - Add slewing to compensate very bad clock of Arduino
+  - function `UpdateTime` accepts parameter specifying number of attempts (default 10)
+* Git ignore 'userdefs.h'
+* Fix compiler warnings
+
 # Version 11.43
 * Added library installation instruction
 * Changed code to remove compiler warnings
